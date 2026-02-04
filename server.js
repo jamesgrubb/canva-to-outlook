@@ -119,7 +119,8 @@ async function uploadImageToCloudinary(buffer, filename) {
       console.log(`Reusing existing asset: ${existing.secure_url}`);
       return existing.secure_url;
     } catch (e) {
-      if (e.http_code !== 404) throw e;
+      const httpCode = e.http_code || (e.error && e.error.http_code);
+      if (httpCode !== 404) throw e;
     }
   }
 
@@ -257,7 +258,7 @@ app.post('/api/process', upload.any(), handleMulterError, async (req, res) => {
         imageUrlMap[imagePath] = cloudinaryUrl;
       } catch (error) {
         console.error(`Error uploading ${filename}:`, error);
-        const errorMessage = error.message || error.toString() || 'Unknown upload error';
+        const errorMessage = error.message || (error.error && error.error.message) || JSON.stringify(error) || 'Unknown upload error';
         
         // Check for common Cloudinary errors
         if (errorMessage.includes('Invalid API Key') || errorMessage.includes('401')) {
@@ -330,7 +331,7 @@ app.post('/api/process', upload.any(), handleMulterError, async (req, res) => {
 
   } catch (error) {
     console.error('Processing error:', error);
-    const errorMessage = error.message || error.toString() || 'Internal server error';
+    const errorMessage = error.message || (error.error && error.error.message) || JSON.stringify(error) || 'Internal server error';
     
     // Check if it's a Cloudinary error
     if (error.http_code) {
