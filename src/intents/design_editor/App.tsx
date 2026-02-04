@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button, Text, Title } from "@canva/app-ui-kit";
 import { Archive, FolderCheck, XCircle } from "lucide-react";
+import { FormattedMessage, useIntl } from "react-intl";
 import JSZip from "jszip";
 
 // ---------------------------------------------------------------------------
@@ -15,6 +16,7 @@ type Status = "idle" | "has-files" | "converting" | "done";
 // ---------------------------------------------------------------------------
 
 export default function App() {
+  const intl = useIntl();
   const [files, setFiles] = useState<SelectedFile[]>([]);
   const [processedHtml, setProcessedHtml] = useState<string | null>(null);
   const [folderName, setFolderName] = useState<string | null>(null);
@@ -70,7 +72,14 @@ export default function App() {
       }
 
       if (extracted.length === 0) {
-        setMessage({ text: "That file is empty or couldn't be read.", type: "error" });
+        setMessage({
+          text: intl.formatMessage({
+            id: "app.error.emptyFile",
+            defaultMessage: "That file is empty or couldn't be read.",
+            description: "Error shown when the uploaded ZIP has no files inside",
+          }),
+          type: "error",
+        });
         return;
       }
 
@@ -78,11 +87,18 @@ export default function App() {
       setStatus("has-files");
     } catch (err) {
       setMessage({
-        text: "Couldn't open that file: " + ((err as Error).message || ""),
+        text: intl.formatMessage(
+          {
+            id: "app.error.cantOpen",
+            defaultMessage: "Couldn't open that file: {error}",
+            description: "Error shown when the ZIP file fails to parse. {error} is the technical reason.",
+          },
+          { error: (err as Error).message || "" },
+        ),
         type: "error",
       });
     }
-  }, []);
+  }, [intl]);
 
   const onDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
@@ -94,10 +110,17 @@ export default function App() {
         setFolderName(file.name);
         extractZip(file);
       } else {
-        setMessage({ text: "Please drop your Canva export here.", type: "error" });
+        setMessage({
+          text: intl.formatMessage({
+            id: "app.error.wrongFileType",
+            defaultMessage: "Please drop your Canva export here.",
+            description: "Error shown when the user drops a non-ZIP file",
+          }),
+          type: "error",
+        });
       }
     },
-    [extractZip],
+    [extractZip, intl],
   );
 
   const onFileSelect = useCallback(
@@ -159,7 +182,15 @@ export default function App() {
         ) ||
         files.find((f) => f.name.toLowerCase().endsWith(".html"));
 
-      if (!htmlFile) throw new Error("Something's not right with that export. Try again.");
+      if (!htmlFile) {
+        throw new Error(
+          intl.formatMessage({
+            id: "app.error.invalidExport",
+            defaultMessage: "Something's not right with that export. Try again.",
+            description: "Error when the export ZIP doesn't contain an email file",
+          }),
+        );
+      }
       formData.append("index.html", htmlFile.file);
 
       // Add image files (preserve original-case path)
@@ -191,13 +222,25 @@ export default function App() {
       }
 
       const result = await res.json();
-      if (!result.html) throw new Error("Something went wrong. Please try again.");
+      if (!result.html) {
+        throw new Error(
+          intl.formatMessage({
+            id: "app.error.serverError",
+            defaultMessage: "Something went wrong. Please try again.",
+            description: "Generic error when the server returns no email data",
+          }),
+        );
+      }
 
       setProcessedHtml(result.html);
       setStatus("done");
     } catch (err) {
       setMessage({
-        text: (err as Error).message || "Something went wrong",
+        text: (err as Error).message || intl.formatMessage({
+          id: "app.error.generic",
+          defaultMessage: "Something went wrong.",
+          description: "Generic fallback error message",
+        }),
         type: "error",
       });
       setStatus("has-files");
@@ -223,9 +266,23 @@ export default function App() {
         document.execCommand("copy");
         document.body.removeChild(ta);
       }
-      setMessage({ text: "Copied! Paste it into your email.", type: "success" });
+      setMessage({
+        text: intl.formatMessage({
+          id: "app.success.copied",
+          defaultMessage: "Copied! Paste it into your email.",
+          description: "Success message after the email is copied to clipboard",
+        }),
+        type: "success",
+      });
     } catch {
-      setMessage({ text: "Copy failed. Try again.", type: "error" });
+      setMessage({
+        text: intl.formatMessage({
+          id: "app.error.copyFailed",
+          defaultMessage: "Copy failed. Try again.",
+          description: "Error when clipboard write fails",
+        }),
+        type: "error",
+      });
     }
   };
 
@@ -236,17 +293,35 @@ export default function App() {
   if (status === "done") {
     return (
       <div style={S.root}>
-        <Title size="medium">Your email is ready</Title>
+        <Title size="medium">
+          <FormattedMessage
+            id="app.done.title"
+            defaultMessage="Your email is ready"
+            description="Title shown after the email has been converted"
+          />
+        </Title>
         <Text size="small">
-          Paste it into Outlook or any email sender.
+          <FormattedMessage
+            id="app.done.subtitle"
+            defaultMessage="Paste it into Outlook or any email sender."
+            description="Instruction shown after conversion is complete"
+          />
         </Text>
 
         <Button variant="primary" onClick={copyHtml}>
-          Copy to clipboard
+          <FormattedMessage
+            id="app.button.copy"
+            defaultMessage="Copy to clipboard"
+            description="Button that copies the converted email to clipboard"
+          />
         </Button>
 
         <Button variant="tertiary" onClick={reset}>
-          Start again
+          <FormattedMessage
+            id="app.button.startAgain"
+            defaultMessage="Start again"
+            description="Button that resets the app back to the initial state"
+          />
         </Button>
 
         {message && <MessageBanner {...message} />}
@@ -260,9 +335,19 @@ export default function App() {
 
   return (
     <div style={S.root}>
-      <Title size="medium">Canva to Outlook</Title>
+      <Title size="medium">
+        <FormattedMessage
+          id="app.title"
+          defaultMessage="Canva to Outlook"
+          description="Main app title"
+        />
+      </Title>
       <Text size="small">
-        Export your email from Canva, then drop the file here to get it ready for Outlook.
+        <FormattedMessage
+          id="app.subtitle"
+          defaultMessage="Export your email from Canva, then drop the file here to get it ready for Outlook."
+          description="Instruction text below the app title"
+        />
       </Text>
 
       {/* Drop zone */}
@@ -285,11 +370,27 @@ export default function App() {
         </div>
 
         <Text size="small">
-          {status === "has-files" ? "File selected" : "Drag & drop your export here"}
+          {status === "has-files" ? (
+            <FormattedMessage
+              id="app.dropzone.selected"
+              defaultMessage="File selected"
+              description="Label shown in the drop zone after a file is picked"
+            />
+          ) : (
+            <FormattedMessage
+              id="app.dropzone.idle"
+              defaultMessage="Drag & drop your export here"
+              description="Placeholder text in the drop zone before a file is picked"
+            />
+          )}
         </Text>
         {status !== "has-files" && (
           <Text size="small" tone="secondary">
-            or click to browse
+            <FormattedMessage
+              id="app.dropzone.browse"
+              defaultMessage="or click to browse"
+              description="Secondary hint below the drag-and-drop instruction"
+            />
           </Text>
         )}
 
@@ -303,7 +404,11 @@ export default function App() {
                 e.stopPropagation();
                 reset();
               }}
-              title="Clear selection"
+              title={intl.formatMessage({
+                id: "app.button.clearSelection",
+                defaultMessage: "Clear selection",
+                description: "Tooltip on the X button to remove the selected file",
+              })}
             >
               <XCircle size={15} color="#dc3545" />
             </button>
@@ -323,21 +428,33 @@ export default function App() {
       {/* Validation warning */}
       {status === "has-files" && !isReady && (
         <Text size="small" tone="critical">
-          That doesn't look like a Canva email export. Try exporting again.
+          <FormattedMessage
+            id="app.validation.invalid"
+            defaultMessage="That doesn't look like a Canva email export. Try exporting again."
+            description="Warning shown when the ZIP contents don't match the expected Canva export structure"
+          />
         </Text>
       )}
 
       {/* Convert button */}
       {status === "has-files" && isReady && (
         <Button variant="primary" onClick={processFiles}>
-          Prepare email
+          <FormattedMessage
+            id="app.button.prepare"
+            defaultMessage="Prepare email"
+            description="Primary button that starts the conversion"
+          />
         </Button>
       )}
 
       {/* Converting — disabled button acts as loading indicator */}
       {status === "converting" && (
         <Button variant="primary" disabled>
-          Preparing…
+          <FormattedMessage
+            id="app.button.preparing"
+            defaultMessage="Preparing…"
+            description="Button label while the email is being processed"
+          />
         </Button>
       )}
 
@@ -367,10 +484,6 @@ function MessageBanner({ text, type }: { text: string; type: "success" | "error"
     </div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
 // Styles

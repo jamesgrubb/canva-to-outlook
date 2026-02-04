@@ -1,0 +1,86 @@
+{
+  "app.button.clearSelection": {
+    "defaultMessage": "Clear selection",
+    "description": "Tooltip on the X button to remove the selected file"
+  },
+  "app.button.copy": {
+    "defaultMessage": "Copy to clipboard",
+    "description": "Button that copies the converted email to clipboard"
+  },
+  "app.button.prepare": {
+    "defaultMessage": "Prepare email",
+    "description": "Primary button that starts the conversion"
+  },
+  "app.button.preparing": {
+    "defaultMessage": "Preparing…",
+    "description": "Button label while the email is being processed"
+  },
+  "app.button.startAgain": {
+    "defaultMessage": "Start again",
+    "description": "Button that resets the app back to the initial state"
+  },
+  "app.done.subtitle": {
+    "defaultMessage": "Paste it into Outlook or any email sender.",
+    "description": "Instruction shown after conversion is complete"
+  },
+  "app.done.title": {
+    "defaultMessage": "Your email is ready",
+    "description": "Title shown after the email has been converted"
+  },
+  "app.dropzone.browse": {
+    "defaultMessage": "or click to browse",
+    "description": "Secondary hint below the drag-and-drop instruction"
+  },
+  "app.dropzone.idle": {
+    "defaultMessage": "Drag & drop your export here",
+    "description": "Placeholder text in the drop zone before a file is picked"
+  },
+  "app.dropzone.selected": {
+    "defaultMessage": "File selected",
+    "description": "Label shown in the drop zone after a file is picked"
+  },
+  "app.error.cantOpen": {
+    "defaultMessage": "Couldn't open that file: {error}",
+    "description": "Error shown when the ZIP file fails to parse. {error} is the technical reason."
+  },
+  "app.error.copyFailed": {
+    "defaultMessage": "Copy failed. Try again.",
+    "description": "Error when clipboard write fails"
+  },
+  "app.error.emptyFile": {
+    "defaultMessage": "That file is empty or couldn't be read.",
+    "description": "Error shown when the uploaded ZIP has no files inside"
+  },
+  "app.error.generic": {
+    "defaultMessage": "Something went wrong.",
+    "description": "Generic fallback error message"
+  },
+  "app.error.invalidExport": {
+    "defaultMessage": "Something's not right with that export. Try again.",
+    "description": "Error when the export ZIP doesn't contain an email file"
+  },
+  "app.error.serverError": {
+    "defaultMessage": "Something went wrong. Please try again.",
+    "description": "Generic error when the server returns no email data"
+  },
+  "app.error.wrongFileType": {
+    "defaultMessage": "Please drop your Canva export here.",
+    "description": "Error shown when the user drops a non-ZIP file"
+  },
+  "app.subtitle": {
+    "defaultMessage": "Export your email from Canva, then drop the file here to get it ready for Outlook.",
+    "description": "Instruction text below the app title"
+  },
+  "app.success.copied": {
+    "defaultMessage": "Copied! Paste it into your email.",
+    "description": "Success message after the email is copied to clipboard"
+  },
+  "app.title": {
+    "defaultMessage": "Canva to Outlook",
+    "description": "Main app title"
+  },
+  "app.validation.invalid": {
+    "defaultMessage": "That doesn't look like a Canva email export. Try exporting again.",
+    "description": "Warning shown when the ZIP contents don't match the expected Canva export structure"
+  }
+}
