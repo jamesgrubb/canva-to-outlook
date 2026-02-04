@@ -70,7 +70,7 @@ export default function App() {
       }
 
       if (extracted.length === 0) {
-        setMessage({ text: "ZIP is empty or unreadable.", type: "error" });
+        setMessage({ text: "That file is empty or couldn't be read.", type: "error" });
         return;
       }
 
@@ -78,7 +78,7 @@ export default function App() {
       setStatus("has-files");
     } catch (err) {
       setMessage({
-        text: "Failed to read ZIP: " + ((err as Error).message || ""),
+        text: "Couldn't open that file: " + ((err as Error).message || ""),
         type: "error",
       });
     }
@@ -94,7 +94,7 @@ export default function App() {
         setFolderName(file.name);
         extractZip(file);
       } else {
-        setMessage({ text: "Please drop a ZIP file.", type: "error" });
+        setMessage({ text: "Please drop your Canva export here.", type: "error" });
       }
     },
     [extractZip],
@@ -159,7 +159,7 @@ export default function App() {
         ) ||
         files.find((f) => f.name.toLowerCase().endsWith(".html"));
 
-      if (!htmlFile) throw new Error("No HTML file found in ZIP.");
+      if (!htmlFile) throw new Error("Something's not right with that export. Try again.");
       formData.append("index.html", htmlFile.file);
 
       // Add image files (preserve original-case path)
@@ -191,7 +191,7 @@ export default function App() {
       }
 
       const result = await res.json();
-      if (!result.html) throw new Error("No HTML returned from server.");
+      if (!result.html) throw new Error("Something went wrong. Please try again.");
 
       setProcessedHtml(result.html);
       setStatus("done");
@@ -205,7 +205,7 @@ export default function App() {
   };
 
   // -----------------------------------------------------------------------
-  // Copy & Download
+  // Copy
   // -----------------------------------------------------------------------
 
   const copyHtml = async () => {
@@ -223,7 +223,7 @@ export default function App() {
         document.execCommand("copy");
         document.body.removeChild(ta);
       }
-      setMessage({ text: "Copied to clipboard!", type: "success" });
+      setMessage({ text: "Copied! Paste it into your email.", type: "success" });
     } catch {
       setMessage({ text: "Copy failed. Try again.", type: "error" });
     }
@@ -236,13 +236,13 @@ export default function App() {
   if (status === "done") {
     return (
       <div style={S.root}>
-        <Title size="medium">Conversion complete</Title>
+        <Title size="medium">Your email is ready</Title>
         <Text size="small">
-          Your HTML is ready for Outlook. Download or copy it below.
+          Paste it into Outlook or any email sender.
         </Text>
 
         <Button variant="primary" onClick={copyHtml}>
-          Copy HTML
+          Copy to clipboard
         </Button>
 
         <Button variant="tertiary" onClick={reset}>
@@ -262,7 +262,7 @@ export default function App() {
     <div style={S.root}>
       <Title size="medium">Canva to Outlook</Title>
       <Text size="small">
-        Upload your Canva email export ZIP to convert images for Outlook.
+        Export your email from Canva, then drop the file here to get it ready for Outlook.
       </Text>
 
       {/* Drop zone */}
@@ -285,7 +285,7 @@ export default function App() {
         </div>
 
         <Text size="small">
-          {status === "has-files" ? "ZIP selected" : "Drag & drop ZIP here"}
+          {status === "has-files" ? "File selected" : "Drag & drop your export here"}
         </Text>
         <Text size="small" tone="secondary">
           or click to browse
@@ -338,21 +338,21 @@ export default function App() {
       {/* Validation warning */}
       {status === "has-files" && !isReady && (
         <Text size="small" tone="critical">
-          Need an HTML file and images in an images/ folder.
+          That doesn't look like a Canva email export. Try exporting again.
         </Text>
       )}
 
       {/* Convert button */}
       {status === "has-files" && isReady && (
         <Button variant="primary" onClick={processFiles}>
-          Convert
+          Prepare email
         </Button>
       )}
 
       {/* Converting — disabled button acts as loading indicator */}
       {status === "converting" && (
         <Button variant="primary" disabled>
-          Converting…
+          Preparing…
         </Button>
       )}
 
