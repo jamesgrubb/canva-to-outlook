@@ -311,7 +311,7 @@ export default function App() {
         <Button variant="primary" onClick={copyHtml}>
           <FormattedMessage
             id="app.button.copy"
-            defaultMessage="Copy to clipboard"
+            defaultMessage="Copy email"
             description="Button that copies the converted email to clipboard"
           />
         </Button>

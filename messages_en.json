@@ -4,7 +4,7 @@
     "description": "Tooltip on the X button to remove the selected file"
   },
   "app.button.copy": {
-    "defaultMessage": "Copy to clipboard",
+    "defaultMessage": "Copy email",
     "description": "Button that copies the converted email to clipboard"
   },
   "app.button.prepare": {
