@@ -10,7 +10,7 @@ const crypto = require('crypto');
 // Validate Cloudinary configuration
 // Support both signed (with API secret) and unsigned (with upload preset) uploads
 // Note: API key is required for both modes, but API secret is only needed for signed uploads
-const useUnsignedUpload = process.env.CLOUDINARY_UPLOAD_PRESET !== undefined;
+const useUnsignedUpload = !!process.env.CLOUDINARY_UPLOAD_PRESET;
 const useSignedUpload = process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET;
 
 if (!process.env.CLOUDINARY_CLOUD_NAME) {
@@ -57,7 +57,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // CORS: restrict to Canva app origin in production; falls back to * for local dev
-const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "";
+const ALLOWED_ORIGIN = (process.env.ALLOWED_ORIGIN || "").toLowerCase();
 if (!ALLOWED_ORIGIN) {
   console.warn('WARNING: ALLOWED_ORIGIN is not set. Falling back to allow all origins.');
 }
