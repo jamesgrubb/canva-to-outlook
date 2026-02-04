@@ -320,23 +320,6 @@ export default function App() {
         onChange={onFileSelect}
       />
 
-      {/* File list preview */}
-      {files.length > 0 && (
-        <div style={S.fileList}>
-          {files.slice(0, 10).map((f, i) => (
-            <div key={i} style={S.fileItem}>
-              <span style={S.fileName}>{f.name}</span>
-              <span style={S.fileSize}>{formatSize(f.file.size)}</span>
-            </div>
-          ))}
-          {files.length > 10 && (
-            <div style={{ ...S.fileItem, color: "#999", fontSize: "13px" }}>
-              ... and {files.length - 10} more
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Validation warning */}
       {status === "has-files" && !isReady && (
         <Text size="small" tone="critical">
@@ -388,13 +371,6 @@ function MessageBanner({ text, type }: { text: string; type: "success" | "error"
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function formatSize(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), 2);
-  return (bytes / Math.pow(k, i)).toFixed(1) + " " + ["B", "KB", "MB"][i];
-}
 
 // ---------------------------------------------------------------------------
 // Styles
@@ -455,32 +431,6 @@ const S = {
     padding: 0,
     display: "flex",
     alignItems: "center",
-  } as React.CSSProperties,
-
-  fileList: {
-    background: "#f5f5f5",
-    borderRadius: "6px",
-    padding: "8px 10px",
-    maxHeight: "140px",
-    overflowY: "auto",
-  } as React.CSSProperties,
-
-  fileItem: {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "3px 0",
-    borderBottom: "1px solid #eee",
-  } as React.CSSProperties,
-
-  fileName: {
-    fontWeight: 500,
-    fontSize: "13px",
-    color: "#333",
-  } as React.CSSProperties,
-
-  fileSize: {
-    color: "#999",
-    fontSize: "11px",
   } as React.CSSProperties,
 
 };
