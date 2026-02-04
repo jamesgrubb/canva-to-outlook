@@ -229,18 +229,32 @@ export default function App() {
     }
   };
 
-  const downloadHtml = () => {
+  const downloadHtml = async () => {
     if (!processedHtml) return;
-    const url = URL.createObjectURL(
-      new Blob([processedHtml], { type: "text/html" }),
-    );
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = (folderName || "email").replace(/\.zip$/i, "") + ".html";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const fileName = (folderName || "email").replace(/\.zip$/i, "") + ".html";
+
+    // showSaveFilePicker works inside Canva's sandbox (no navigation involved)
+    if (typeof window.showSaveFilePicker === "function") {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{ description: "HTML Files", accept: { "text/html": [".html"] } }],
+        });
+        const writable = await handle.createWritable();
+        await writable.write(processedHtml);
+        await writable.close();
+        setMessage({ text: "Downloaded!", type: "success" });
+        return;
+      } catch (e) {
+        // User cancelled the dialog — do nothing
+        if ((e as DOMException).name === "AbortError") return;
+        // Fall through to clipboard fallback
+      }
+    }
+
+    // Fallback: copy to clipboard instead
+    await copyHtml();
+    setMessage({ text: "Download isn't supported here — HTML copied to clipboard instead.", type: "success" });
   };
 
   // -----------------------------------------------------------------------
