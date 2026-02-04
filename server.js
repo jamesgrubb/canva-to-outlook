@@ -56,8 +56,16 @@ if (useUnsignedUpload) {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Enable CORS for all origins
-app.use(cors());
+// CORS: restrict to Canva app origin in production; falls back to * for local dev
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "";
+if (!ALLOWED_ORIGIN) {
+  console.warn('WARNING: ALLOWED_ORIGIN is not set. Falling back to allow all origins.');
+}
+app.use(cors({
+  origin: ALLOWED_ORIGIN || '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
+}));
 
 // Diagnostic endpoint to check Cloudinary configuration (before static files)
 app.get('/api/health', (req, res) => {
