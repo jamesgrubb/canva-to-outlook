@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button, Text, Title } from "@canva/app-ui-kit";
-import { Archive, FolderCheck, Zap, Download, Copy, RotateCcw, XCircle } from "lucide-react";
+import { Archive, FolderCheck, XCircle } from "lucide-react";
 import JSZip from "jszip";
 
 // ---------------------------------------------------------------------------
@@ -229,34 +229,6 @@ export default function App() {
     }
   };
 
-  const downloadHtml = async () => {
-    if (!processedHtml) return;
-    const fileName = (folderName || "email").replace(/\.zip$/i, "") + ".html";
-
-    // showSaveFilePicker works inside Canva's sandbox (no navigation involved)
-    if (typeof window.showSaveFilePicker === "function") {
-      try {
-        const handle = await window.showSaveFilePicker({
-          suggestedName: fileName,
-          types: [{ description: "HTML Files", accept: { "text/html": [".html"] } }],
-        });
-        const writable = await handle.createWritable();
-        await writable.write(processedHtml);
-        await writable.close();
-        setMessage({ text: "Downloaded!", type: "success" });
-        return;
-      } catch (e) {
-        // User cancelled the dialog — do nothing
-        if ((e as DOMException).name === "AbortError") return;
-        // Fall through to clipboard fallback
-      }
-    }
-
-    // Fallback: copy to clipboard instead
-    await copyHtml();
-    setMessage({ text: "Download isn't supported here — HTML copied to clipboard instead.", type: "success" });
-  };
-
   // -----------------------------------------------------------------------
   // Render — done state
   // -----------------------------------------------------------------------
@@ -269,14 +241,9 @@ export default function App() {
           Your HTML is ready for Outlook. Download or copy it below.
         </Text>
 
-        <div style={S.row}>
-          <Button variant="primary" onClick={downloadHtml}>
-            Download
-          </Button>
-          <Button variant="secondary" onClick={copyHtml}>
-            Copy HTML
-          </Button>
-        </div>
+        <Button variant="primary" onClick={copyHtml}>
+          Copy HTML
+        </Button>
 
         <Button variant="tertiary" onClick={reset}>
           Start again
@@ -514,8 +481,4 @@ const S = {
     fontSize: "11px",
   } as React.CSSProperties,
 
-  row: {
-    display: "flex",
-    gap: "8px",
-  } as React.CSSProperties,
 };
