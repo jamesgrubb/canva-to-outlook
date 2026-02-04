@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canva to Outlook Converter</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      view-transition-name: card;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .drop-zone {
+      border: 3px dashed #667eea;
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      background: #f8f9ff;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    .drop-zone.dragover {
+      border-color: #764ba2;
+      background: #f0f0ff;
+      transform: scale(1.02);
+    }
+
+    .drop-zone.has-files {
+      border-color: #4caf50;
+      background: #f1f8f4;
+    }
+
+    .drop-zone.download-ready {
+      border-color: #667eea;
+      background: #f8f9ff;
+    }
+
+    .drop-zone.download-ready .drop-zone-icon {
+      font-size: 64px;
+    }
+
+    .drop-zone.download-ready .drop-zone-icon svg {
+      width: 64px;
+      height: 64px;
+    }
+
+    .drop-zone.download-ready .drop-zone-text {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .drop-zone-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .drop-zone-icon svg {
+      width: 48px;
+      height: 48px;
+      stroke-width: 1.5;
+    }
+
+    .drop-zone-text {
+      color: #667eea;
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    .drop-zone-hint {
+      color: #999;
+      font-size: 12px;
+    }
+
+    .drop-zone-selected-name {
+      color: #4caf50;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #f1f8f4;
+      border-radius: 6px;
+      display: none;
+      position: relative;
+      padding-right: 32px;
+    }
+
+    .drop-zone-selected-name.show {
+      display: inline-block;
+    }
+
+    .drop-zone-cancel {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #dc3545;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .drop-zone-cancel:hover {
+      background: rgba(220, 53, 69, 0.1);
+      color: #c82333;
+    }
+
+    .drop-zone-cancel svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .file-list-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin: 20px 0 8px 0;
+      display: none;
+    }
+
+    .file-list-title.show {
+      display: block;
+    }
+
+    .file-list {
+      margin: 0 0 20px 0;
+      padding: 15px;
+      background: #f5f5f5;
+      border-radius: 6px;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .file-list.show {
+      display: block;
+    }
+
+    .file-item {
+      padding: 8px;
+      font-size: 13px;
+      color: #555;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .file-item:last-child {
+      border-bottom: none;
+    }
+
+    .file-item-name {
+      font-weight: 500;
+    }
+
+    .file-item-size {
+      color: #999;
+      font-size: 11px;
+    }
+
+    .button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .button-group {
+      margin-top: 20px;
+    }
+
+    .primary-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .primary-actions .button {
+      width: auto;
+      flex: 1;
+    }
+
+    .btn-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .button-ghost {
+      background: transparent;
+      color: #999;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 12px 15px;
+      margin-top: 20px;
+    }
+
+    .button-ghost:hover:not(:disabled) {
+      background: rgba(102, 126, 234, 0.08);
+      color: #667eea;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .button-ghost .btn-icon {
+      width: 15px;
+      height: 15px;
+    }
+
+    .button-ghost .btn-icon svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .info-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      opacity: 0.45;
+      cursor: help;
+      z-index: 2;
+      transition: opacity 0.2s;
+    }
+
+    .info-btn:hover {
+      opacity: 1;
+    }
+
+    .info-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .tooltip {
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      background: #2d2d2d;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 400;
+      padding: 8px 12px;
+      border-radius: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+    }
+
+    .tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #2d2d2d;
+    }
+
+    .info-btn:hover ~ .tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .button.loading {
+      color: transparent;
+    }
+
+    .button.loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-left: -10px;
+      margin-top: -10px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .message {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes vt-fade-out {
+      to { opacity: 0; transform: translateY(-6px); }
+    }
+
+    @keyframes vt-slide-up {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    ::view-transition-old(card) {
+      animation: 0.2s ease vt-fade-out both;
+    }
+
+    ::view-transition-new(card) {
+      animation: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) vt-slide-up both;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Canva to Outlook Converter</h1>
+    <p class="subtitle">Upload your Canva email export folder or ZIP file</p>
+
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-zone-icon" id="dropZoneIcon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+        </svg>
+      </div>
+      <div class="drop-zone-text" id="dropZoneText">Drag & drop folder or ZIP here</div>
+      <div class="drop-zone-hint" id="dropZoneHint">or click to browse</div>
+      <div class="drop-zone-selected-name" id="dropZoneSelectedName">
+        <span id="selectedNameText"></span>
+        <button type="button" class="drop-zone-cancel" id="cancelSelectionBtn" title="Clear selection">
+          <i data-lucide="x-circle"></i>
+        </button>
+      </div>
+    </div>
+
+    <input type="file" id="folderInput" class="file-input" webkitdirectory directory multiple>
+    <input type="file" id="zipInput" class="file-input" accept=".zip">
+
+    <div class="file-list-title" id="fileListTitle">Your folder contents</div>
+    <div class="file-list" id="fileList"></div>
+
+    <div class="button-group" id="buttonGroup" style="display: none;">
+      <button class="button" id="convertButton" style="display: none;">
+        <span class="btn-icon"><i data-lucide="zap"></i></span>
+        <span>Convert</span>
+        <span class="info-btn"><i data-lucide="info"></i></span>
+        <span class="tooltip">Upload images and rewrite HTML paths</span>
+      </button>
+      <div class="primary-actions" id="primaryActions" style="display: none;">
+        <button class="button" id="downloadReadyButton">
+          <span class="btn-icon"><i data-lucide="download"></i></span>
+          <span>Download</span>
+          <span class="info-btn"><i data-lucide="info"></i></span>
+          <span class="tooltip">Save converted HTML as a file</span>
+        </button>
+        <button class="button" id="copyButton">
+          <span class="btn-icon"><i data-lucide="copy"></i></span>
+          <span>Copy HTML</span>
+          <span class="info-btn"><i data-lucide="info"></i></span>
+          <span class="tooltip">Copy converted HTML to clipboard</span>
+        </button>
+      </div>
+      <button class="button button-ghost" id="startAgainButton" style="display: none;">
+        <span class="btn-icon"><i data-lucide="rotate-ccw"></i></span>
+        <span>Start again</span>
+        <span class="info-btn"><i data-lucide="info"></i></span>
+        <span class="tooltip">Clear and start a new conversion</span>
+      </button>
+    </div>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    let appInitialized = false;
+
+    // Wait for DOM to be fully ready
+    function initializeApp() {
+      // Prevent multiple initializations
+      if (appInitialized) {
+        return;
+      }
+      appInitialized = true;
+      const dropZone = document.getElementById('dropZone');
+      const dropZoneIcon = document.getElementById('dropZoneIcon');
+      const dropZoneText = document.getElementById('dropZoneText');
+      const dropZoneHint = document.getElementById('dropZoneHint');
+      const dropZoneSelectedName = document.getElementById('dropZoneSelectedName');
+      const selectedNameText = document.getElementById('selectedNameText');
+      const cancelSelectionBtn = document.getElementById('cancelSelectionBtn');
+      const folderInput = document.getElementById('folderInput');
+      const zipInput = document.getElementById('zipInput');
+      const fileList = document.getElementById('fileList');
+      const fileListTitle = document.getElementById('fileListTitle');
+      const buttonGroup = document.getElementById('buttonGroup');
+      const convertButton = document.getElementById('convertButton');
+      const copyButton = document.getElementById('copyButton');
+      const startAgainButton = document.getElementById('startAgainButton');
+      const downloadReadyButton = document.getElementById('downloadReadyButton');
+      const primaryActions = document.getElementById('primaryActions');
+      const message = document.getElementById('message');
+
+      let selectedFiles = [];
+      let isZipFile = false;
+      let processedHtml = null; // Store processed HTML for download
+      let selectedFolderName = null; // Store selected folder/ZIP name
+
+      function withTransition(fn) {
+        if ('startViewTransition' in document) {
+          document.startViewTransition(fn);
+        } else {
+          fn();
+        }
+      }
+
+      function initializeIcons() {
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+          try {
+            lucide.createIcons();
+          } catch (error) {
+            console.error('Error initializing icons:', error);
+          }
+        }
+      }
+      
+      // Initialize icons multiple times to ensure they render
+      initializeIcons();
+      setTimeout(initializeIcons, 100);
+      setTimeout(initializeIcons, 500);
+      
+      // Also initialize when Lucide loads (if it loads after our script)
+      if (typeof lucide === 'undefined') {
+        const checkLucide = setInterval(() => {
+          if (typeof lucide !== 'undefined') {
+            clearInterval(checkLucide);
+            initializeIcons();
+          }
+        }, 100);
+        // Stop checking after 5 seconds
+        setTimeout(() => clearInterval(checkLucide), 5000);
+      }
+
+      // Cancel selection button handler
+      cancelSelectionBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clearSelection();
+      });
+
+      // Function to clear selection and reset UI
+      function clearSelection() {
+        withTransition(() => {
+          selectedFiles = [];
+          selectedFolderName = null;
+          isZipFile = false;
+          processedHtml = null;
+          folderInput.value = '';
+          zipInput.value = '';
+          updateUI();
+          resetUI();
+        });
+      }
+
+      // Click handler for drop zone - opens ZIP file picker
+      // Note: Folders can be selected via drag-and-drop
+      let isOpeningFilePicker = false;
+      dropZone.addEventListener('click', (e) => {
+        // Don't trigger if clicking the cancel button or selected name area
+        if (e.target.closest('.drop-zone-cancel') || e.target.closest('.drop-zone-selected-name')) {
+          return;
+        }
+        // Prevent double-opening
+        if (isOpeningFilePicker) {
+          return;
+        }
+        // Prevent default and stop propagation
+        e.preventDefault();
+        e.stopPropagation();
+        // Open ZIP file picker (users can drag folders)
+        if (zipInput) {
+          try {
+            isOpeningFilePicker = true;
+            zipInput.click();
+            console.log('ZIP file picker opened');
+            // Reset flag after a short delay
+            setTimeout(() => {
+              isOpeningFilePicker = false;
+            }, 500);
+          } catch (error) {
+            console.error('Error opening ZIP file picker:', error);
+            isOpeningFilePicker = false;
+          }
+        }
+      });
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+
+        const items = e.dataTransfer.items;
+        const files = e.dataTransfer.files;
+        
+        if (items && items.length > 0) {
+          const item = items[0];
+          if (item.kind === 'file') {
+            const entry = item.webkitGetAsEntry();
+            if (entry) {
+              if (entry.isDirectory) {
+                handleDirectoryEntry(entry);
+              } else if (entry.name && entry.name.endsWith('.zip')) {
+                const zipFile = item.getAsFile();
+                if (zipFile) {
+                  selectedFolderName = entry.name;
+                  handleZipFile(zipFile);
+                } else {
+                  showMessage('Unable to read ZIP file. Please try selecting it using the file input.', 'error');
+                }
+              } else {
+                showMessage('Please drop a folder or ZIP file.', 'error');
+              }
+            }
+          }
+        } else if (files && files.length > 0) {
+          // Fallback for browsers without webkitGetAsEntry
+          const file = files[0];
+          if (file.name.endsWith('.zip')) {
+            handleZipFile(file);
+          } else {
+            showMessage('Please drop a folder or ZIP file.', 'error');
+          }
+        } else {
+          showMessage('No files detected. Please try again.', 'error');
+        }
+      });
+
+      // Folder input handler
+      folderInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+          // Extract folder name from the first file's path
+          const firstPath = files[0].webkitRelativePath || files[0].name;
+          const folderName = firstPath.split('/')[0] || firstPath.split('\\')[0] || 'Selected Folder';
+          selectedFolderName = folderName;
+        }
+        handleFiles(files, false);
+      });
+
+      // ZIP input handler
+      zipInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file && file.name.endsWith('.zip')) {
+          selectedFolderName = file.name;
+          handleZipFile(file);
+        } else {
+          // Clear the input if invalid file selected
+          zipInput.value = '';
+        }
+      });
+
+      // Handle directory entry (from drag & drop)
+      function handleDirectoryEntry(entry) {
+      selectedFiles = [];
+      isZipFile = false;
+      selectedFolderName = entry.name || 'Selected Folder';
+      resetUI();
+      
+      function traverseDirectory(dirEntry, path = '') {
+        return new Promise((resolve) => {
+          const reader = dirEntry.createReader();
+          const entries = [];
+          
+          function readEntries() {
+            reader.readEntries((results) => {
+              if (results.length === 0) {
+                resolve(entries);
+              } else {
+                entries.push(...results);
+                readEntries();
+              }
+            });
+          }
+          
+          readEntries();
+        });
+      }
+
+      traverseDirectory(entry).then((entries) => {
+        const filePromises = [];
+        
+        function processEntry(entry, path = '') {
+          return new Promise((resolve) => {
+            if (entry.isFile) {
+              entry.file((file) => {
+                const fullPath = path ? `${path}/${file.name}` : file.name;
+                selectedFiles.push({
+                  file: file,
+                  path: fullPath,
+                  name: file.name
+                });
+                resolve();
+              });
+            } else if (entry.isDirectory) {
+              const dirReader = entry.createReader();
+              dirReader.readEntries((entries) => {
+                const promises = entries.map(subEntry => 
+                  processEntry(subEntry, path ? `${path}/${entry.name}` : entry.name)
+                );
+                Promise.all(promises).then(() => resolve());
+              });
+            } else {
+              resolve();
+            }
+          });
+        }
+
+        Promise.all(entries.map(e => processEntry(e))).then(() => {
+          updateUI();
+        });
+      });
+    }
+
+    // Handle ZIP file
+    async function handleZipFile(zipFile) {
+      try {
+        hideMessage();
+        resetUI();
+
+        if (!window.JSZip) {
+          throw new Error('JSZip library not loaded. Please refresh the page.');
+        }
+
+        const zip = new JSZip();
+        let zipData;
+        
+        try {
+          zipData = await zip.loadAsync(zipFile);
+        } catch (zipError) {
+          throw new Error('Invalid or corrupted ZIP file: ' + zipError.message);
+        }
+        
+        selectedFiles = [];
+        isZipFile = true;
+
+        // Extract all files from ZIP
+        for (const [relativePath, zipEntry] of Object.entries(zipData.files)) {
+          if (!zipEntry.dir) {
+            try {
+              const blob = await zipEntry.async('blob');
+              // Use the relativePath for the file name to preserve directory structure
+              // Extract just the filename for display
+              const filename = relativePath.split('/').pop() || relativePath.split('\\').pop() || zipEntry.name;
+              const file = new File([blob], filename, { type: blob.type });
+              selectedFiles.push({
+                file: file,
+                path: relativePath, // Preserve full path for processing
+                name: filename // Use just filename for display
+              });
+            } catch (extractError) {
+              console.warn(`Failed to extract ${relativePath}:`, extractError);
+              // Continue with other files
+            }
+          }
+        }
+
+        if (selectedFiles.length === 0) {
+          throw new Error('ZIP file appears to be empty or contains no valid files.');
+        }
+
+        updateUI();
+      } catch (error) {
+        console.error('ZIP handling error:', error);
+        showMessage('Error reading ZIP file: ' + (error.message || 'Unknown error'), 'error');
+        selectedFiles = [];
+        updateUI();
+      }
+      }
+
+      // Handle files from input
+      function handleFiles(files, isZip) {
+      selectedFiles = files.map(file => ({
+        file: file,
+        path: file.webkitRelativePath || file.name,
+        name: file.name
+      }));
+      isZipFile = isZip;
+      // If folder name not set, extract from first file path
+      if (!selectedFolderName && files.length > 0) {
+        const firstPath = files[0].webkitRelativePath || files[0].name;
+        selectedFolderName = firstPath.split('/')[0] || firstPath.split('\\')[0] || (isZip ? 'Selected ZIP' : 'Selected Folder');
+      }
+        resetUI();
+        updateUI();
+      }
+
+      // Update UI based on selected files
+      function updateUI() {
+      if (selectedFiles.length === 0) {
+        dropZone.classList.remove('has-files');
+        dropZoneText.textContent = 'Drag & drop folder or ZIP here';
+        dropZoneHint.textContent = 'or click to browse';
+        dropZoneHint.style.display = 'block';
+        dropZoneSelectedName.classList.remove('show');
+        dropZoneIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path></svg>';
+        fileListTitle.classList.remove('show');
+        fileList.classList.remove('show');
+        buttonGroup.style.display = 'none';
+        selectedFolderName = null;
+        return;
+      }
+
+      dropZone.classList.add('has-files');
+      
+      // Update drop zone to show selected folder/ZIP name
+      if (selectedFolderName) {
+        dropZoneText.textContent = isZipFile ? 'ZIP file selected' : 'Folder selected';
+        dropZoneHint.style.display = 'none';
+        selectedNameText.textContent = selectedFolderName;
+        dropZoneSelectedName.classList.add('show');
+        dropZoneIcon.innerHTML = isZipFile ? '<i data-lucide="archive"></i>' : '<i data-lucide="folder-check"></i>';
+        initializeIcons();
+      }
+      
+      // Check if we have any HTML file and images
+      const hasHtml = selectedFiles.some(f => {
+        const name = f.name.toLowerCase();
+        const path = f.path.toLowerCase();
+        return name.endsWith('.html') || path.endsWith('.html') || 
+               name === 'index.html' || path.includes('index.html') ||
+               name === 'email.html' || path.includes('email.html');
+      });
+      
+      const hasImages = selectedFiles.some(f => {
+        const name = f.name.toLowerCase();
+        const path = f.path.toLowerCase();
+        return (name.endsWith('.png') || name.endsWith('.jpg') || name.endsWith('.jpeg')) &&
+               (path.includes('images/') || path.includes('images\\'));
+      });
+
+      if (hasHtml && hasImages) {
+        // Show Convert button when files are ready
+        convertButton.disabled = false;
+        buttonGroup.style.display = 'block';
+        convertButton.style.display = 'flex';
+        primaryActions.style.display = 'none';
+        startAgainButton.style.display = 'none';
+      } else {
+        // Hide button group if files aren't ready
+        if (selectedFiles.length > 0) {
+          buttonGroup.style.display = 'none';
+          convertButton.disabled = true;
+          showMessage('Please ensure you have an HTML file (index.html, email.html, etc.) and images in an images/ folder', 'error');
+        } else {
+          buttonGroup.style.display = 'none';
+        }
+      }
+
+      // Show file list title and contents
+      fileListTitle.classList.add('show');
+      fileList.innerHTML = '';
+      selectedFiles.slice(0, 10).forEach(file => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.innerHTML = `
+          <div class="file-item-name">${file.name}</div>
+          <div class="file-item-size">${formatFileSize(file.file.size)}</div>
+        `;
+        fileList.appendChild(item);
+      });
+      
+      if (selectedFiles.length > 10) {
+        const more = document.createElement('div');
+        more.className = 'file-item';
+        more.textContent = `... and ${selectedFiles.length - 10} more files`;
+        fileList.appendChild(more);
+      }
+      
+        fileList.classList.add('show');
+      }
+
+      // Format file size
+      function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+      }
+
+      // Convert button handler
+      convertButton.addEventListener('click', async () => {
+        if (selectedFiles.length === 0 || convertButton.disabled) return;
+        await processFiles();
+      });
+
+      // Process files function (called by Convert button)
+      async function processFiles() {
+        if (selectedFiles.length === 0 || processedHtml) return;
+
+        try {
+          convertButton.disabled = true;
+          convertButton.classList.add('loading');
+          hideMessage();
+
+        // Build FormData
+        const formData = new FormData();
+
+        // Find and add HTML file (prefer index.html, then email.html, then any .html)
+        const htmlFile = selectedFiles.find(f => {
+          const name = f.name.toLowerCase();
+          const path = f.path.toLowerCase();
+          return name === 'index.html' || path.includes('index.html');
+        }) || selectedFiles.find(f => {
+          const name = f.name.toLowerCase();
+          const path = f.path.toLowerCase();
+          return name === 'email.html' || path.includes('email.html');
+        }) || selectedFiles.find(f => {
+          const name = f.name.toLowerCase();
+          return name.endsWith('.html');
+        });
+
+        if (!htmlFile) {
+          throw new Error('No HTML file found. Please ensure your folder/ZIP contains an HTML file (index.html, email.html, etc.)');
+        }
+
+        formData.append('index.html', htmlFile.file);
+
+        // Add image files
+        selectedFiles.forEach(file => {
+          const nameLower = file.name.toLowerCase();
+          const pathLower = file.path.toLowerCase();
+          if ((nameLower.endsWith('.png') || nameLower.endsWith('.jpg') || nameLower.endsWith('.jpeg')) &&
+              (pathLower.includes('images/') || pathLower.includes('images\\'))) {
+            const imagePath = file.path.replace(/\\/g, '/');
+            formData.append('images', file.file, imagePath);
+          }
+        });
+
+        // Upload to server
+        let response;
+        try {
+          response = await fetch('/api/process', {
+            method: 'POST',
+            body: formData
+          });
+        } catch (networkError) {
+          throw new Error('Network error: Unable to connect to server. Make sure the server is running.');
+        }
+
+        if (!response.ok) {
+          let errorMessage = 'Server error';
+          try {
+            const error = await response.json();
+            errorMessage = error.error || `Server returned ${response.status}`;
+          } catch (parseError) {
+            errorMessage = `Server returned ${response.status}: ${response.statusText}`;
+          }
+          throw new Error(errorMessage);
+        }
+
+        let result;
+        try {
+          result = await response.json();
+        } catch (parseError) {
+          throw new Error('Invalid response from server. Please try again.');
+        }
+
+        if (!result.html) {
+          throw new Error('Server did not return HTML content.');
+        }
+
+        // Store processed HTML
+        processedHtml = result.html;
+
+          // Hide Convert, show Download/Copy group and Start again
+          convertButton.style.display = 'none';
+          convertButton.classList.remove('loading');
+          showDownloadReadyState();
+
+        } catch (error) {
+          console.error('Error:', error);
+          const errorMessage = error.message || 'An unexpected error occurred';
+          showMessage('Error: ' + errorMessage, 'error');
+          convertButton.disabled = false;
+          convertButton.classList.remove('loading');
+        }
+      }
+
+      // Show message
+      function showMessage(text, type) {
+      message.textContent = text;
+      message.className = `message ${type} show`;
+      setTimeout(() => {
+        message.classList.remove('show');
+        }, type === 'success' ? 5000 : 10000);
+      }
+
+      // Hide message
+      function hideMessage() {
+        message.classList.remove('show');
+      }
+
+      // Copy button handler
+      copyButton.addEventListener('click', async () => {
+      if (!processedHtml) {
+        showMessage('No HTML available to copy. Please process a file first.', 'error');
+        return;
+      }
+
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(processedHtml);
+          showMessage('HTML copied to clipboard!', 'success');
+        } else {
+          // Fallback for older browsers
+          const textarea = document.createElement('textarea');
+          textarea.value = processedHtml;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          
+          try {
+            const successful = document.execCommand('copy');
+            if (!successful) {
+              throw new Error('Copy command failed');
+            }
+            showMessage('HTML copied to clipboard!', 'success');
+          } catch (copyError) {
+            throw new Error('Unable to copy to clipboard. Please check browser permissions.');
+          } finally {
+            document.body.removeChild(textarea);
+          }
+        }
+      } catch (error) {
+        console.error('Copy error:', error);
+          showMessage('Error copying to clipboard: ' + error.message, 'error');
+        }
+      });
+
+      // Download button handler
+      downloadReadyButton.addEventListener('click', () => {
+        if (!processedHtml) return;
+        const blob = new Blob([processedHtml], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = (selectedFolderName || 'email').replace(/\.zip$/, '') + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // Start again button handler
+      startAgainButton.addEventListener('click', () => {
+        clearSelection();
+      });
+
+      // Show download-ready state - hide drop zone, show action buttons
+      function showDownloadReadyState() {
+        withTransition(() => {
+          dropZone.style.display = 'none';
+          fileListTitle.classList.remove('show');
+          fileList.classList.remove('show');
+          primaryActions.style.display = 'flex';
+          startAgainButton.style.display = 'flex';
+          initializeIcons();
+        });
+      }
+
+      // Hide buttons when new files are selected
+      function resetUI() {
+        convertButton.style.display = 'none';
+        convertButton.disabled = true;
+        convertButton.classList.remove('loading');
+        primaryActions.style.display = 'none';
+        startAgainButton.style.display = 'none';
+        dropZone.style.display = 'block';
+        processedHtml = null;
+        dropZone.classList.remove('download-ready');
+      }
+
+    } // End of initializeApp function
+
+    // Initialize app when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+      initializeApp();
+    }
+  </script>
+</body>
+</html>
