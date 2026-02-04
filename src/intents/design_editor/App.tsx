@@ -287,9 +287,11 @@ export default function App() {
         <Text size="small">
           {status === "has-files" ? "File selected" : "Drag & drop your export here"}
         </Text>
-        <Text size="small" tone="secondary">
-          or click to browse
-        </Text>
+        {status !== "has-files" && (
+          <Text size="small" tone="secondary">
+            or click to browse
+          </Text>
+        )}
 
         {/* Selected file badge */}
         {folderName && status === "has-files" && (
