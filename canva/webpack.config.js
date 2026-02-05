@@ -1,6 +1,6 @@
 const path = require("path");
 const { DefinePlugin, optimize } = require("webpack");
-require("dotenv").config();
+require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === "production";

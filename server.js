@@ -80,8 +80,8 @@ app.get('/api/health', (req, res) => {
   res.json(config);
 });
 
-// Serve static files from public directory
-app.use(express.static('public'));
+// Serve static files from desktop/public directory
+app.use(express.static('desktop/public'));
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
@@ -352,7 +352,7 @@ app.use((err, req, res, next) => {
 
 // Serve frontend at root
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'desktop', 'public', 'index.html'));
 });
 
 // Start server

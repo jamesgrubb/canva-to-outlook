@@ -1,0 +1,35 @@
+{
+  "name": "canva-to-outlook-canva-app",
+  "version": "1.0.0",
+  "description": "Canva app for converting Canva email exports to Outlook-ready HTML",
+  "private": true,
+  "scripts": {
+    "dev": "webpack serve --mode development",
+    "build": "webpack --mode production"
+  },
+  "dependencies": {
+    "@canva/app-i18n-kit": "^1.2.0",
+    "@canva/app-ui-kit": "^5.5.0",
+    "@canva/intents": "^2.1.2",
+    "@formatjs/cli": "^6.12.2",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/webpack-env": "^1.18.0",
+    "css-loader": "^7.1.0",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.400.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-intl": "^7.1.11",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.0",
+    "typescript": "^5.5.0",
+    "webpack": "^5.99.0",
+    "webpack-cli": "^6.0.0",
+    "webpack-dev-server": "^5.2.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
