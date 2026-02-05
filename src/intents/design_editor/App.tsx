@@ -342,16 +342,18 @@ export default function App() {
           description="Main app title"
         />
       </Title>
-      <Text size="small">
-        <FormattedMessage
-          id="app.subtitle"
-          defaultMessage="Export your email from Canva, then drop the file here to get it ready for Outlook."
-          description="Instruction text below the app title"
-        />
-      </Text>
+      {status !== "converting" && (
+        <Text size="small">
+          <FormattedMessage
+            id="app.subtitle"
+            defaultMessage="Export your email from Canva, then drop the file here to get it ready for Outlook."
+            description="Instruction text below the app title"
+          />
+        </Text>
+      )}
 
       {/* Drop zone */}
-      <div
+      {status !== "converting" && <div
         style={S.dropZone(dragOver, status === "has-files")}
         onDragOver={(e) => {
           e.preventDefault();
@@ -414,7 +416,7 @@ export default function App() {
             </button>
           </div>
         )}
-      </div>
+      </div>}
 
       {/* Hidden file input */}
       <input
@@ -447,9 +449,9 @@ export default function App() {
         </Button>
       )}
 
-      {/* Converting — disabled button acts as loading indicator */}
+      {/* Converting — animated spinner via Button loading state */}
       {status === "converting" && (
-        <Button variant="primary" disabled>
+        <Button variant="primary" loading>
           <FormattedMessage
             id="app.button.preparing"
             defaultMessage="Preparing…"
