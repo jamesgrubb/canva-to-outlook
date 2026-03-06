@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Project Is
 
-A single-page web app that converts Canva email exports into Outlook-compatible HTML. The user uploads a Canva export (folder or ZIP containing an HTML file and an `images/` directory). The server uploads the images to Cloudinary and rewrites all image paths in the HTML to point to the Cloudinary CDN URLs. The result is copy-paste-ready HTML for use in Outlook or similar email clients.
+A single-page web app that converts Canva email exports into email-ready HTML. The user uploads a Canva export (folder or ZIP containing an HTML file and an `images/` directory). The server uploads the images to Cloudinary and rewrites all image paths in the HTML to point to the Cloudinary CDN URLs. The result is copy-paste-ready HTML for use in email clients.
 
 ## Running the Server
 

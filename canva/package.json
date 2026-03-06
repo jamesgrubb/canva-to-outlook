@@ -1,5 +1,5 @@
 {
-  "name": "canva-to-outlook-canva-app",
+  "name": "canva-email-export-canva-app",
   "version": "1.0.0",
   "description": "Email Export Tool - Canva app for converting Canva email exports to email-ready HTML",
   "private": true,

@@ -1,7 +1,7 @@
 {
-  "name": "canva-to-outlook-converter",
+  "name": "canva-email-export-tool",
   "version": "1.0.0",
-  "description": "Convert Canva email exports to Outlook-ready HTML with Cloudinary-hosted images",
+  "description": "Convert Canva email exports to email-ready HTML with Cloudinary-hosted images",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,7 +10,6 @@
   },
   "keywords": [
     "canva",
-    "outlook",
     "email",
     "cloudinary"
   ],

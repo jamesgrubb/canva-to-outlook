@@ -303,7 +303,7 @@ export default function App() {
         <Text size="small">
           <FormattedMessage
             id="app.done.subtitle"
-            defaultMessage="Paste it into Outlook or any email sender."
+            defaultMessage="Paste it into your email client."
             description="Instruction shown after conversion is complete"
           />
         </Text>
@@ -346,7 +346,7 @@ export default function App() {
         <Text size="small">
           <FormattedMessage
             id="app.subtitle"
-            defaultMessage="Export your email from Canva, then drop the file here to get it ready for Outlook."
+            defaultMessage="Export your email from Canva, then drop the file here to prepare it for your email client."
             description="Instruction text below the app title"
           />
         </Text>

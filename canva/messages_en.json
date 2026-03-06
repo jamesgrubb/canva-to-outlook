@@ -20,7 +20,7 @@
     "description": "Button that resets the app back to the initial state"
   },
   "app.done.subtitle": {
-    "defaultMessage": "Paste it into Outlook or any email sender.",
+    "defaultMessage": "Paste it into your email client.",
     "description": "Instruction shown after conversion is complete"
   },
   "app.done.title": {
@@ -68,7 +68,7 @@
     "description": "Error shown when the user drops a non-ZIP file"
   },
   "app.subtitle": {
-    "defaultMessage": "Export your email from Canva, then drop the file here to get it ready for Outlook.",
+    "defaultMessage": "Export your email from Canva, then drop the file here to prepare it for your email client.",
     "description": "Instruction text below the app title"
   },
   "app.success.copied": {
